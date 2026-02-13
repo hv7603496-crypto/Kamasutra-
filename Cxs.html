@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>kamasutra.com</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg1:#0f2027;
+  --bg2:#203a43;
+  --bg3:#2c5364;
+  --text:white;
+  --glass:rgba(255,255,255,0.08);
+}
+
+body.light{
+  --bg1:#ffffff;
+  --bg2:#f3f3f3;
+  --bg3:#dddddd;
+  --text:black;
+  --glass:rgba(0,0,0,0.08);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  color:var(--text);
+  overflow:hidden;
+  transition:0.5s;
+}
+
+/* 3D Particle Shine */
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+
+/* Toggle */
+.toggle-btn{
+  position:fixed;
+  top:15px;
+  right:15px;
+  padding:8px 15px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  z-index:10;
+}
+
+/* Center */
+.center{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  height:100vh;
+}
+
+/* Login */
+.login-box{
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  padding:40px;
+  border-radius:20px;
+  width:320px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+
+.login-box input{
+  width:100%;
+  padding:12px;
+  margin:12px 0;
+  border:none;
+  border-radius:10px;
+}
+
+.login-box button{
+  padding:12px 25px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(45deg,#ff416c,#ff4b2b);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.login-box button:hover{
+  transform:scale(1.1);
+}
+
+.error{ color:red; }
+
+/* Main */
+.main-site{
+  display:none;
+  padding-top:80px;
+  text-align:center;
+}
+
+.header{
+  font-size:42px;
+  margin-bottom:40px;
+  text-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+.container{
+  display:flex;
+  gap:30px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.box{
+  width:230px;
+  padding:30px;
+  border-radius:20px;
+  backdrop-filter:blur(20px);
+  background:var(--glass);
+  cursor:pointer;
+  transition:0.5s;
+  box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+.box:hover{
+  transform:scale(1.15) rotateY(15deg);
+}
+
+.logo{
+  font-size:60px;
+  margin-bottom:15px;
+}
+
+.youtube{ color:#ff0000; }
+.chrome{ color:#00ff00; }
+.telegram{ color:#00c3ff; }
+
+/* Popup */
+.popup{
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+}
+
+.popup-content{
+  background:white;
+  color:black;
+  padding:30px;
+  border-radius:15px;
+  text-align:center;
+}
+
+.popup-content button{
+  margin-top:15px;
+  padding:12px 25px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(45deg,#ff416c,#ff4b2b);
+  color:white;
+  cursor:pointer;
+}
+
+/* Membership */
+.membership-page{
+  display:none;
+  padding:40px;
+  text-align:center;
+}
+
+.plan{
+  background:var(--glass);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  margin:20px;
+  border-radius:20px;
+  display:inline-block;
+  width:220px;
+  transition:0.4s;
+}
+
+.plan:hover{
+  transform:scale(1.1);
+}
+
+.plan button{
+  margin-top:15px;
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:limegreen;
+  cursor:pointer;
+}
+
+.back-btn{
+  margin-top:25px;
+  padding:10px 20px;
+  background:red;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+<button class="toggle-btn" onclick="toggleMode()">🌙 / ☀</button>
+
+<!-- LOGIN -->
+<div class="center" id="loginPage">
+  <div class="login-box">
+    <h2>🔐 Login</h2>
+    <input type="password" id="passwordInput" placeholder="Enter Password">
+    <button onclick="checkPassword()">Login</button>
+    <div class="error" id="errorMsg"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-site" id="mainSite">
+  <div class="header">kamasutra.com</div>
+
+  <div class="container">
+    <div class="box" onclick="showPopup()">
+      <div class="logo youtube">▶</div>
+      <p>Premium Content</p>
+    </div>
+
+    <div class="box" onclick="openChrome()">
+      <div class="logo chrome">🌐</div>
+      <p>Chrome Video</p>
+    </div>
+
+    <div class="box" onclick="openTelegram()">
+      <div class="logo telegram">✈</div>
+      <p>Telegram Channel</p>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="premiumPopup">
+  <div class="popup-content">
+    <h3>🎁 Premium Required</h3>
+    <button onclick="openMembership()">Take Membership</button>
+  </div>
+</div>
+
+<!-- MEMBERSHIP -->
+<div class="membership-page" id="membershipPage">
+  <h2>Premium Plans</h2>
+
+  <div class="plan">
+    <h3>Basic</h3>
+    <p>₹99</p>
+    <button onclick="alert('Activated')">Buy</button>
+  </div>
+
+  <div class="plan">
+    <h3>Pro</h3>
+    <p>₹199</p>
+    <button onclick="alert('Activated')">Buy</button>
+  </div>
+
+  <br>
+  <button class="back-btn" onclick="goBack()">⬅ Back</button>
+</div>
+
+<script>
+var correctPassword="vermaji530";
+
+function checkPassword(){
+  var entered=document.getElementById("passwordInput").value;
+  if(entered===correctPassword){
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("mainSite").style.display="block";
+  }else{
+    document.getElementById("errorMsg").innerText="Wrong Password!";
+  }
+}
+
+function toggleMode(){
+  document.body.classList.toggle("light");
+}
+
+function showPopup(){
+  document.getElementById("premiumPopup").style.display="flex";
+}
+
+function openMembership(){
+  document.getElementById("premiumPopup").style.display="none";
+  document.getElementById("mainSite").style.display="none";
+  document.getElementById("membershipPage").style.display="block";
+}
+
+function goBack(){
+  document.getElementById("membershipPage").style.display="none";
+  document.getElementById("mainSite").style.display="block";
+}
+
+function openChrome(){
+  window.open("https://viralkand.com/","_blank");
+}
+
+function openTelegram(){
+  window.open("https://t.me/yourchannel","_blank");
+}
+
+/* 3D Particle Shine Animation */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+for(let i=0;i<80;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2,
+    dx:(Math.random()-0.5),
+    dy:(Math.random()-0.5)
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(255,255,255,0.7)";
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.x+=p.dx;
+    p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width) p.dx*=-1;
+    if(p.y<0||p.y>canvas.height) p.dy*=-1;
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
